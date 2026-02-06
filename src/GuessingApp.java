@@ -1,54 +1,77 @@
 import java.util.Scanner;
 
 public class GuessingApp {
-    public static void main(String[] args) {
-        System.out.println("Welcome to the Guessing App");
 
-        GameConfig obj = new GameConfig();
-        obj.showRules();
+    public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter player name: ");
-        String playerName=sc.nextLine();
+        boolean playAgain = true;
 
-        int attempts = 0;
-        int hintCount = 0;
+        System.out.println("Welcome to the Guessing App");
 
-        while (attempts < obj.getMaxAttempts()) {
-            try {
-                System.out.print("Enter your guess: ");
-                int guess = InputHandler.getValidInput(sc, obj.getMax_Num(), obj.getMin_Num());
+        while (playAgain) {
 
-                attempts++;
-                String result = GuessValidator.ValidateGuess(guess, obj.getTargetNumber());
+            GameConfig obj = new GameConfig();
+            obj.showRules();
 
-                if ("CORRECT".equals(result)) {
-                    System.out.println("Correct Guess!");
-                    break;
+            System.out.print("Enter player name: ");
+            String playerName = sc.nextLine();
+
+            int attempts = 0;
+            int hintCount = 0;
+            boolean isWon = false;
+
+
+            while (attempts < obj.getMaxAttempts()) {
+
+                try {
+                    System.out.print("Enter your guess: ");
+
+                    int guess = InputHandler.getValidInput(sc, obj.getMax_Num(), obj.getMin_Num());
+                    attempts++;
+                    String result = GuessValidator.ValidateGuess(guess, obj.getTargetNumber());
+
+                    if ("CORRECT".equals(result)) {
+                        System.out.println(" Correct Guess!");
+                        isWon = true;
+                        break;
+                    }
+
+                    hintCount++;
+                    System.out.println(result);
+                    System.out.println(HintService.generateHint(obj.getTargetNumber(), hintCount));
+
                 }
-
-                hintCount++;
-
-
-                System.out.println(HintService.generateHint(obj.getTargetNumber(), hintCount));
-                System.out.println(result);
-
+                catch (InvalidGuessException e) {
+                    System.out.println(e.getMessage());
+                    GameLogger.logInvalidAttempt(e.getMessage());
+                }
             }
-            catch (InvalidGuessException e) {
-                System.out.println(e.getMessage());
-                GameLogger.logInvalidAttempt(e.getMessage());
-                continue;
+
+
+            String resultStatus = isWon ? "WIN" : "LOSS";
+
+            GameResult result = new GameResult(playerName, attempts, resultStatus);
+
+            GameResultService.saveResult(result);
+
+            System.out.println("\n========== GAME SUMMARY ==========");
+            System.out.println("Player: " + playerName);
+            System.out.println("Result: " + resultStatus);
+            System.out.println("Attempts used: " + attempts);
+            System.out.println("Correct number: " + obj.getTargetNumber());
+            System.out.println("Invalid attempts: " + GameLogger.getInvalidAttempts());
+
+            GameResultService.showPreviousResults();
+
+
+            System.out.print("\nDo you want to play again? (yes/no): ");
+            String choice = sc.nextLine();
+
+            if (!choice.equalsIgnoreCase("yes")) {
+                playAgain = false;
             }
         }
-
-        String resultStatus = (attempts < obj.getMaxAttempts()) ? "WIN" : "LOSS";
-        GameResult result = new GameResult(playerName, attempts, resultStatus);
-        GameResultService.saveResult(result);
-
-
-        System.out.println("\nGame Over!");
-        System.out.println("The correct number was: " + obj.getTargetNumber());
-        System.out.println("Invalid attempts: " + GameLogger.getInvalidAttempts());
-
+        System.out.println("\nThank you for playing! Exiting gracefully...");
     }
 }
