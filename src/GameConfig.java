@@ -17,6 +17,14 @@ public class GameConfig {
     }
 
 
+    public int getMax_Num(){
+        return Max_Num;
+    }
+
+    public int getMin_Num(){
+        return Min_Num;
+    }
+
     public int getMaxAttempts(){
         return maxAttempts;
     }
