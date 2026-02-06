@@ -10,6 +10,7 @@ public class GuessingApp {
 
         Scanner sc=new Scanner(System.in);
         int attempts=0;
+        int hintCount=0;
 
         while(attempts<obj.getMaxAttempts()){
             System.out.print("Enter your guess: ");
@@ -17,12 +18,28 @@ public class GuessingApp {
             attempts++;
 
             String result=GuessValidator.ValidateGuess(guess, obj.getTargetNumber());
-            System.out.println(result);
+
 
             if("CORRECT".equals(result)){
+                System.out.println(result);
                 break;
             }
-        }
+
+            hintCount++;
+            String hint=HintService.generateHint(obj.getTargetNumber(), hintCount);
+                System.out.println(hint);
+
+                System.out.println(result);
+            }
+
+        System.out.println();
+        System.out.println("Game Over!");
+        System.out.println("The correct number was: " +
+                obj.getTargetNumber());
 
     }
-}
+
+
+
+    }
+
