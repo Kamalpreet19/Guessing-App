@@ -8,7 +8,8 @@ public class GuessingApp {
         obj.showRules();
 
         Scanner sc = new Scanner(System.in);
-
+        System.out.println("Enter player name: ");
+        String playerName=sc.nextLine();
 
         int attempts = 0;
         int hintCount = 0;
@@ -28,8 +29,9 @@ public class GuessingApp {
 
                 hintCount++;
 
-                System.out.println(result);
+
                 System.out.println(HintService.generateHint(obj.getTargetNumber(), hintCount));
+                System.out.println(result);
 
             }
             catch (InvalidGuessException e) {
@@ -38,6 +40,11 @@ public class GuessingApp {
                 continue;
             }
         }
+
+        String resultStatus = (attempts < obj.getMaxAttempts()) ? "WIN" : "LOSS";
+        GameResult result = new GameResult(playerName, attempts, resultStatus);
+        GameResultService.saveResult(result);
+
 
         System.out.println("\nGame Over!");
         System.out.println("The correct number was: " + obj.getTargetNumber());
