@@ -8,6 +8,8 @@ public class GuessingApp {
         obj.showRules();
 
         Scanner sc = new Scanner(System.in);
+
+
         int attempts = 0;
         int hintCount = 0;
 
